@@ -1,0 +1,944 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Bus Ticket Booking</title>
+  <style>
+    :root {
+      --bg: #f5f7f2;
+      --surface: #ffffff;
+      --soft: #eef3ef;
+      --text: #1d2930;
+      --muted: #64727b;
+      --line: #d8e0dc;
+      --primary: #087f8c;
+      --primary-dark: #05606a;
+      --accent: #f3a712;
+      --success: #278f5f;
+      --shadow: 0 16px 40px rgba(29, 41, 48, 0.09);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Inter, "Segoe UI", Arial, sans-serif;
+      color: var(--text);
+      background: var(--bg);
+    }
+
+    button,
+    input,
+    select {
+      font: inherit;
+    }
+
+    button {
+      cursor: pointer;
+    }
+
+    .app {
+      width: min(1180px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 28px 0 42px;
+    }
+
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 18px;
+      margin-bottom: 22px;
+    }
+
+    .eyebrow {
+      margin: 0 0 6px;
+      color: var(--primary-dark);
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+
+    h1,
+    h2,
+    h3 {
+      margin: 0;
+      letter-spacing: 0;
+    }
+
+    h1 {
+      font-size: clamp(30px, 5vw, 48px);
+      line-height: 1.04;
+    }
+
+    h2 {
+      font-size: 20px;
+      line-height: 1.2;
+    }
+
+    .support {
+      display: inline-flex;
+      align-items: center;
+      min-height: 34px;
+      padding: 7px 12px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: var(--surface);
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .support::before {
+      content: "";
+      width: 8px;
+      height: 8px;
+      margin-right: 8px;
+      border-radius: 50%;
+      background: var(--success);
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: minmax(260px, 0.9fr) minmax(360px, 1.25fr) minmax(280px, 0.85fr);
+      grid-template-areas:
+        "search results summary"
+        "seats seats summary";
+      gap: 18px;
+      align-items: start;
+    }
+
+    .panel {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--surface);
+      box-shadow: var(--shadow);
+      padding: 20px;
+    }
+
+    .search-panel {
+      grid-area: search;
+    }
+
+    .results-panel {
+      grid-area: results;
+    }
+
+    .seats-panel {
+      grid-area: seats;
+    }
+
+    .summary-panel {
+      grid-area: summary;
+      position: sticky;
+      top: 18px;
+    }
+
+    .heading {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      margin-bottom: 18px;
+    }
+
+    .form-grid,
+    .passenger-form {
+      display: grid;
+      gap: 14px;
+    }
+
+    label {
+      display: grid;
+      gap: 7px;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    input,
+    select {
+      width: 100%;
+      min-height: 44px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      color: var(--text);
+      padding: 0 12px;
+      outline: none;
+    }
+
+    input:focus,
+    select:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(8, 127, 140, 0.12);
+    }
+
+    .primary,
+    .secondary,
+    .icon {
+      min-height: 44px;
+      border-radius: 8px;
+      border: 0;
+      font-weight: 800;
+    }
+
+    .primary {
+      background: var(--primary);
+      color: #fff;
+      padding: 0 16px;
+    }
+
+    .primary:hover {
+      background: var(--primary-dark);
+    }
+
+    .secondary {
+      background: var(--soft);
+      color: var(--text);
+      padding: 0 14px;
+    }
+
+    .icon {
+      width: 44px;
+      flex: 0 0 44px;
+      border: 1px solid var(--line);
+      background: var(--soft);
+      color: var(--primary-dark);
+      font-size: 24px;
+      line-height: 1;
+    }
+
+    .route {
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      align-items: center;
+      gap: 10px;
+      margin-top: 22px;
+      padding: 14px;
+      border-radius: 8px;
+      background: var(--soft);
+    }
+
+    .route-point {
+      display: grid;
+      gap: 7px;
+      color: var(--muted);
+      font-size: 12px;
+      min-width: 0;
+    }
+
+    .route-point:last-child {
+      justify-items: end;
+    }
+
+    .route-point span {
+      width: 12px;
+      height: 12px;
+      border: 3px solid var(--primary);
+      border-radius: 50%;
+      background: #fff;
+    }
+
+    .route-point:last-child span {
+      border-color: var(--accent);
+    }
+
+    .route-point strong {
+      max-width: 110px;
+      overflow: hidden;
+      color: var(--text);
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .route-line {
+      height: 3px;
+      border-radius: 999px;
+      background: repeating-linear-gradient(90deg, var(--primary) 0 12px, transparent 12px 20px);
+    }
+
+    .trip-list {
+      display: grid;
+      gap: 12px;
+    }
+
+    .trip-card {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 16px;
+      min-height: 118px;
+      padding: 16px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+    }
+
+    .trip-card.selected {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(8, 127, 140, 0.12);
+    }
+
+    .trip-title,
+    .trip-times,
+    .trip-meta {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .trip-title {
+      justify-content: space-between;
+      margin-bottom: 12px;
+    }
+
+    .trip-title h3 {
+      font-size: 18px;
+      line-height: 1.25;
+    }
+
+    .rating {
+      min-height: 28px;
+      padding: 4px 8px;
+      border-radius: 999px;
+      background: #fff3d5;
+      color: #6c4a00;
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .time {
+      display: grid;
+      gap: 2px;
+    }
+
+    .time strong,
+    .price {
+      font-size: 22px;
+      font-weight: 900;
+    }
+
+    .time span,
+    .trip-meta,
+    .empty {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .duration {
+      flex: 1 1 80px;
+      min-width: 80px;
+      height: 1px;
+      background: var(--line);
+    }
+
+    .trip-action {
+      display: grid;
+      align-content: center;
+      justify-items: end;
+      gap: 10px;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      min-height: 34px;
+      padding: 7px 12px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .legend {
+      display: flex;
+      gap: 14px;
+      flex-wrap: wrap;
+      margin-bottom: 16px;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .legend span,
+    .seat {
+      width: 34px;
+      height: 34px;
+      border-radius: 7px 7px 4px 4px;
+    }
+
+    .legend-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .available {
+      border: 1px solid var(--line);
+      background: #fff;
+    }
+
+    .selected-seat {
+      border: 1px solid var(--primary);
+      background: var(--primary);
+      color: #fff;
+    }
+
+    .booked-seat {
+      border: 1px solid #cfd6d4;
+      background: #cfd6d4;
+      color: #7b8588;
+    }
+
+    .seat-map {
+      display: grid;
+      grid-template-columns: repeat(5, 42px);
+      gap: 10px;
+      width: max-content;
+      max-width: 100%;
+      padding: 14px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--soft);
+      overflow-x: auto;
+    }
+
+    .seat {
+      border: 1px solid var(--line);
+      background: #fff;
+      color: var(--text);
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .seat:nth-child(5n + 3) {
+      margin-right: 18px;
+    }
+
+    .seat.selected-seat {
+      border-color: var(--primary);
+    }
+
+    .seat.booked-seat {
+      cursor: not-allowed;
+    }
+
+    .summary-lines {
+      display: grid;
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+    .summary-lines div {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .summary-lines span {
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .summary-lines strong {
+      text-align: right;
+    }
+
+    .summary-lines .total {
+      border-bottom: 0;
+      padding: 4px 0 0;
+    }
+
+    .total strong {
+      color: var(--primary-dark);
+      font-size: 24px;
+    }
+
+    .passenger-fields {
+      display: grid;
+      gap: 12px;
+    }
+
+    .passenger-row {
+      display: grid;
+      grid-template-columns: 1fr 82px;
+      gap: 10px;
+    }
+
+    .message {
+      display: none;
+      margin-top: 14px;
+      padding: 12px;
+      border-radius: 8px;
+      background: #e7f5ee;
+      color: #175c3d;
+      font-size: 14px;
+      font-weight: 700;
+      line-height: 1.45;
+    }
+
+    .message.visible {
+      display: block;
+    }
+
+    .empty {
+      padding: 18px;
+      border: 1px dashed var(--line);
+      border-radius: 8px;
+      background: var(--soft);
+    }
+
+    @media (max-width: 1040px) {
+      .grid {
+        grid-template-columns: 1fr 1fr;
+        grid-template-areas:
+          "search summary"
+          "results summary"
+          "seats seats";
+      }
+    }
+
+    @media (max-width: 760px) {
+      .app {
+        width: min(100% - 20px, 560px);
+        padding-top: 18px;
+      }
+
+      .topbar,
+      .grid,
+      .trip-card {
+        display: grid;
+        grid-template-columns: 1fr;
+      }
+
+      .grid {
+        grid-template-areas:
+          "search"
+          "results"
+          "seats"
+          "summary";
+      }
+
+      .summary-panel {
+        position: static;
+      }
+
+      .heading,
+      .trip-title {
+        align-items: stretch;
+      }
+
+      .support,
+      .badge {
+        width: fit-content;
+      }
+
+      .trip-action {
+        justify-items: stretch;
+      }
+
+      .passenger-row {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header class="topbar">
+      <div>
+        <p class="eyebrow">SmartBus</p>
+        <h1>Book bus tickets</h1>
+      </div>
+      <div class="support">24/7 support</div>
+    </header>
+
+    <main class="grid">
+      <section class="panel search-panel">
+        <div class="heading">
+          <div>
+            <p class="eyebrow">Journey</p>
+            <h2>Find your trip</h2>
+          </div>
+          <button class="icon" id="swapCities" type="button" title="Swap cities">⇄</button>
+        </div>
+
+        <form id="searchForm" class="form-grid">
+          <label>From <select id="fromCity" required></select></label>
+          <label>To <select id="toCity" required></select></label>
+          <label>Travel date <input type="date" id="travelDate" required /></label>
+          <label>Passengers <input type="number" id="passengerCount" min="1" max="6" value="1" required /></label>
+          <button class="primary" type="submit">Search buses</button>
+        </form>
+
+        <div class="route">
+          <div class="route-point"><span></span><strong id="routeStart">Bengaluru</strong></div>
+          <div class="route-line"></div>
+          <div class="route-point"><span></span><strong id="routeEnd">Hyderabad</strong></div>
+        </div>
+      </section>
+
+      <section class="panel results-panel">
+        <div class="heading">
+          <div>
+            <p class="eyebrow">Available buses</p>
+            <h2>Recommended trips</h2>
+          </div>
+          <select id="sortTrips">
+            <option value="departure">Departure</option>
+            <option value="price">Lowest price</option>
+            <option value="rating">Top rated</option>
+          </select>
+        </div>
+        <div id="tripList" class="trip-list"></div>
+      </section>
+
+      <section class="panel seats-panel">
+        <div class="heading">
+          <div>
+            <p class="eyebrow">Seats</p>
+            <h2>Choose seats</h2>
+          </div>
+          <span id="selectedTripBadge" class="badge">No trip selected</span>
+        </div>
+        <div class="legend">
+          <div class="legend-item"><span class="available"></span>Available</div>
+          <div class="legend-item"><span class="selected-seat"></span>Selected</div>
+          <div class="legend-item"><span class="booked-seat"></span>Booked</div>
+        </div>
+        <div id="seatMap" class="seat-map"></div>
+      </section>
+
+      <aside class="panel summary-panel">
+        <div class="heading">
+          <div>
+            <p class="eyebrow">Checkout</p>
+            <h2>Booking summary</h2>
+          </div>
+        </div>
+
+        <div class="summary-lines">
+          <div><span>Bus</span><strong id="summaryBus">Select a trip</strong></div>
+          <div><span>Date</span><strong id="summaryDate">-</strong></div>
+          <div><span>Seats</span><strong id="summarySeats">-</strong></div>
+          <div><span>Fare</span><strong id="summaryFare">Rs 0</strong></div>
+          <div><span>Taxes</span><strong id="summaryTaxes">Rs 0</strong></div>
+          <div class="total"><span>Total</span><strong id="summaryTotal">Rs 0</strong></div>
+        </div>
+
+        <form id="passengerForm" class="passenger-form">
+          <div id="passengerFields"></div>
+          <button class="primary" type="submit">Confirm booking</button>
+        </form>
+        <div id="bookingMessage" class="message"></div>
+      </aside>
+    </main>
+  </div>
+
+  <script>
+    const cities = ["Bengaluru", "Chennai", "Hyderabad", "Mumbai", "Pune", "Goa", "Delhi", "Jaipur"];
+
+    const buses = [
+      { id: "sb101", operator: "MetroLine Travels", type: "AC Sleeper", from: "Bengaluru", to: "Hyderabad", depart: "21:30", arrive: "06:15", duration: "8h 45m", price: 1299, rating: 4.7, bookedSeats: [2, 5, 9, 16, 18, 21, 27, 31, 35] },
+      { id: "sb102", operator: "South Star Bus", type: "Volvo Multi Axle", from: "Bengaluru", to: "Hyderabad", depart: "22:45", arrive: "07:05", duration: "8h 20m", price: 1499, rating: 4.8, bookedSeats: [1, 3, 7, 12, 14, 22, 26, 30, 39] },
+      { id: "sb103", operator: "ExpressWay", type: "AC Seater", from: "Bengaluru", to: "Chennai", depart: "07:20", arrive: "13:10", duration: "5h 50m", price: 799, rating: 4.4, bookedSeats: [4, 8, 10, 11, 20, 23, 28, 33] },
+      { id: "sb104", operator: "Coastal Connect", type: "AC Sleeper", from: "Mumbai", to: "Goa", depart: "20:15", arrive: "06:45", duration: "10h 30m", price: 1199, rating: 4.6, bookedSeats: [6, 13, 15, 19, 24, 32, 36, 37] },
+      { id: "sb105", operator: "Deccan Premium", type: "Volvo Multi Axle", from: "Pune", to: "Mumbai", depart: "08:00", arrive: "11:20", duration: "3h 20m", price: 499, rating: 4.5, bookedSeats: [2, 9, 17, 25, 34] },
+      { id: "sb106", operator: "NorthWay", type: "AC Seater", from: "Delhi", to: "Jaipur", depart: "06:45", arrive: "12:10", duration: "5h 25m", price: 699, rating: 4.3, bookedSeats: [5, 6, 12, 18, 29, 40] },
+      { id: "sb107", operator: "Royal Roadways", type: "AC Sleeper", from: "Chennai", to: "Bengaluru", depart: "23:15", arrive: "05:45", duration: "6h 30m", price: 899, rating: 4.6, bookedSeats: [3, 4, 8, 15, 22, 27, 38] },
+      { id: "sb108", operator: "Western Cruiser", type: "AC Sleeper", from: "Hyderabad", to: "Mumbai", depart: "19:30", arrive: "09:20", duration: "13h 50m", price: 1699, rating: 4.5, bookedSeats: [1, 11, 13, 19, 20, 24, 28, 35] }
+    ];
+
+    const state = {
+      trips: [],
+      selectedTrip: null,
+      selectedSeats: [],
+      passengers: 1
+    };
+
+    const el = {
+      searchForm: document.getElementById("searchForm"),
+      fromCity: document.getElementById("fromCity"),
+      toCity: document.getElementById("toCity"),
+      travelDate: document.getElementById("travelDate"),
+      passengerCount: document.getElementById("passengerCount"),
+      routeStart: document.getElementById("routeStart"),
+      routeEnd: document.getElementById("routeEnd"),
+      swapCities: document.getElementById("swapCities"),
+      sortTrips: document.getElementById("sortTrips"),
+      tripList: document.getElementById("tripList"),
+      seatMap: document.getElementById("seatMap"),
+      selectedTripBadge: document.getElementById("selectedTripBadge"),
+      passengerFields: document.getElementById("passengerFields"),
+      passengerForm: document.getElementById("passengerForm"),
+      bookingMessage: document.getElementById("bookingMessage"),
+      summaryBus: document.getElementById("summaryBus"),
+      summaryDate: document.getElementById("summaryDate"),
+      summarySeats: document.getElementById("summarySeats"),
+      summaryFare: document.getElementById("summaryFare"),
+      summaryTaxes: document.getElementById("summaryTaxes"),
+      summaryTotal: document.getElementById("summaryTotal")
+    };
+
+    function init() {
+      cities.forEach((city) => {
+        el.fromCity.appendChild(new Option(city, city));
+        el.toCity.appendChild(new Option(city, city));
+      });
+
+      el.fromCity.value = "Bengaluru";
+      el.toCity.value = "Hyderabad";
+
+      const today = new Date();
+      const date = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}-${String(today.getDate()).padStart(2, "0")}`;
+      el.travelDate.value = date;
+      el.travelDate.min = date;
+
+      bindEvents();
+      updateRoute();
+      updatePassengerFields();
+      searchTrips();
+    }
+
+    function bindEvents() {
+      el.searchForm.addEventListener("submit", (event) => {
+        event.preventDefault();
+        searchTrips();
+      });
+
+      el.fromCity.addEventListener("change", updateRoute);
+      el.toCity.addEventListener("change", updateRoute);
+
+      el.swapCities.addEventListener("click", () => {
+        const currentFrom = el.fromCity.value;
+        el.fromCity.value = el.toCity.value;
+        el.toCity.value = currentFrom;
+        updateRoute();
+        searchTrips();
+      });
+
+      el.sortTrips.addEventListener("change", () => renderTrips(sortTrips(state.trips)));
+
+      el.passengerCount.addEventListener("input", () => {
+        state.passengers = Number(el.passengerCount.value) || 1;
+        state.selectedSeats = state.selectedSeats.slice(0, state.passengers);
+        updatePassengerFields();
+        renderSeatMap();
+        updateSummary();
+      });
+
+      el.passengerForm.addEventListener("submit", confirmBooking);
+    }
+
+    function updateRoute() {
+      el.routeStart.textContent = el.fromCity.value;
+      el.routeEnd.textContent = el.toCity.value;
+    }
+
+    function searchTrips() {
+      state.passengers = Number(el.passengerCount.value) || 1;
+      state.selectedTrip = null;
+      state.selectedSeats = [];
+      el.bookingMessage.classList.remove("visible");
+
+      const from = el.fromCity.value;
+      const to = el.toCity.value;
+      state.trips = from === to ? [] : buses.filter((bus) => bus.from === from && bus.to === to);
+
+      renderTrips(sortTrips(state.trips));
+      updatePassengerFields();
+
+      if (state.trips.length) {
+        selectTrip(sortTrips(state.trips)[0].id);
+      } else {
+        renderSeatMap();
+        updateSummary();
+      }
+    }
+
+    function sortTrips(trips) {
+      const sorted = [...trips];
+      const sortBy = el.sortTrips.value;
+
+      if (sortBy === "price") sorted.sort((a, b) => a.price - b.price);
+      else if (sortBy === "rating") sorted.sort((a, b) => b.rating - a.rating);
+      else sorted.sort((a, b) => a.depart.localeCompare(b.depart));
+
+      return sorted;
+    }
+
+    function renderTrips(trips) {
+      el.tripList.innerHTML = "";
+
+      if (!trips.length) {
+        el.tripList.innerHTML = '<div class="empty">No buses found for this route. Try changing the cities.</div>';
+        return;
+      }
+
+      trips.forEach((trip) => {
+        const card = document.createElement("article");
+        card.className = `trip-card${state.selectedTrip?.id === trip.id ? " selected" : ""}`;
+        card.innerHTML = `
+          <div>
+            <div class="trip-title">
+              <h3>${trip.operator}</h3>
+              <span class="rating">${trip.rating.toFixed(1)} rating</span>
+            </div>
+            <div class="trip-times">
+              <div class="time"><strong>${trip.depart}</strong><span>${trip.from}</span></div>
+              <div class="duration"></div>
+              <div class="time"><strong>${trip.arrive}</strong><span>${trip.to}</span></div>
+            </div>
+            <div class="trip-meta">
+              <span>${trip.type}</span>
+              <span>${trip.duration}</span>
+              <span>${40 - trip.bookedSeats.length} seats left</span>
+            </div>
+          </div>
+          <div class="trip-action">
+            <div class="price">Rs ${trip.price}</div>
+            <button class="secondary" type="button">Select</button>
+          </div>
+        `;
+
+        card.querySelector("button").addEventListener("click", () => selectTrip(trip.id));
+        el.tripList.appendChild(card);
+      });
+    }
+
+    function selectTrip(tripId) {
+      state.selectedTrip = buses.find((trip) => trip.id === tripId);
+      state.selectedSeats = [];
+      el.bookingMessage.classList.remove("visible");
+      renderTrips(sortTrips(state.trips));
+      renderSeatMap();
+      updateSummary();
+    }
+
+    function renderSeatMap() {
+      el.seatMap.innerHTML = "";
+
+      if (!state.selectedTrip) {
+        el.selectedTripBadge.textContent = "No trip selected";
+        el.seatMap.innerHTML = '<div class="empty">Select a bus to see available seats.</div>';
+        return;
+      }
+
+      el.selectedTripBadge.textContent = state.selectedTrip.type;
+
+      for (let seat = 1; seat <= 40; seat += 1) {
+        const button = document.createElement("button");
+        const booked = state.selectedTrip.bookedSeats.includes(seat);
+        const selected = state.selectedSeats.includes(seat);
+
+        button.type = "button";
+        button.textContent = seat;
+        button.className = `seat${booked ? " booked-seat" : ""}${selected ? " selected-seat" : ""}`;
+        button.disabled = booked;
+        button.addEventListener("click", () => toggleSeat(seat));
+        el.seatMap.appendChild(button);
+      }
+    }
+
+    function toggleSeat(seat) {
+      const index = state.selectedSeats.indexOf(seat);
+
+      if (index >= 0) {
+        state.selectedSeats.splice(index, 1);
+      } else if (state.selectedSeats.length < state.passengers) {
+        state.selectedSeats.push(seat);
+      }
+
+      renderSeatMap();
+      updateSummary();
+    }
+
+    function updatePassengerFields() {
+      el.passengerFields.innerHTML = "";
+      const wrapper = document.createElement("div");
+      wrapper.className = "passenger-fields";
+
+      for (let i = 1; i <= state.passengers; i += 1) {
+        const row = document.createElement("div");
+        row.className = "passenger-row";
+        row.innerHTML = `
+          <label>Passenger ${i}<input type="text" name="passengerName" placeholder="Full name" required /></label>
+          <label>Age<input type="number" name="passengerAge" min="1" max="100" placeholder="Age" required /></label>
+        `;
+        wrapper.appendChild(row);
+      }
+
+      el.passengerFields.appendChild(wrapper);
+    }
+
+    function updateSummary() {
+      const trip = state.selectedTrip;
+      const fare = trip ? trip.price * state.selectedSeats.length : 0;
+      const taxes = Math.round(fare * 0.05);
+
+      el.summaryBus.textContent = trip ? trip.operator : "Select a trip";
+      el.summaryDate.textContent = formatDate(el.travelDate.value);
+      el.summarySeats.textContent = state.selectedSeats.length ? state.selectedSeats.join(", ") : "-";
+      el.summaryFare.textContent = `Rs ${fare}`;
+      el.summaryTaxes.textContent = `Rs ${taxes}`;
+      el.summaryTotal.textContent = `Rs ${fare + taxes}`;
+    }
+
+    function formatDate(value) {
+      if (!value) return "-";
+      return new Date(`${value}T00:00:00`).toLocaleDateString("en-IN", {
+        day: "2-digit",
+        month: "short",
+        year: "numeric"
+      });
+    }
+
+    function confirmBooking(event) {
+      event.preventDefault();
+
+      if (!state.selectedTrip) {
+        showMessage("Please select a bus before confirming.");
+        return;
+      }
+
+      if (state.selectedSeats.length !== state.passengers) {
+        showMessage(`Please select ${state.passengers} seat${state.passengers > 1 ? "s" : ""}.`);
+        return;
+      }
+
+      const names = new FormData(el.passengerForm).getAll("passengerName").map((name) => name.trim());
+      if (!names.every(Boolean)) {
+        showMessage("Please enter passenger details.");
+        return;
+      }
+
+      const bookingId = `SB${Math.floor(100000 + Math.random() * 900000)}`;
+      showMessage(`Booking confirmed. Ticket ${bookingId} for ${state.selectedTrip.operator}, seats ${state.selectedSeats.join(", ")}.`);
+      state.selectedTrip.bookedSeats.push(...state.selectedSeats);
+      state.selectedSeats = [];
+      renderTrips(sortTrips(state.trips));
+      renderSeatMap();
+      updateSummary();
+    }
+
+    function showMessage(message) {
+      el.bookingMessage.textContent = message;
+      el.bookingMessage.classList.add("visible");
+    }
+
+    init();
+  </script>
+</body>
+</html>
