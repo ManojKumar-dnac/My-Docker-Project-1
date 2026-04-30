@@ -3,20 +3,22 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title> Cisco Manoj Bus Ticket Booking</title>
+  <title>UrbanBowl Online Ordering</title>
   <style>
     :root {
-      --bg: #f5f7f2;
+      --bg: #f5f6f1;
       --surface: #ffffff;
-      --soft: #eef3ef;
-      --text: #1d2930;
-      --muted: #64727b;
-      --line: #d8e0dc;
-      --primary: #087f8c;
-      --primary-dark: #05606a;
-      --accent: #f3a712;
-      --success: #278f5f;
-      --shadow: 0 16px 40px rgba(29, 41, 48, 0.09);
+      --soft: #edf1ea;
+      --text: #1f2930;
+      --muted: #69757c;
+      --line: #d9e0d8;
+      --primary: #0f766e;
+      --primary-dark: #0b5f59;
+      --accent: #e7a934;
+      --coral: #d9604b;
+      --ink: #25333a;
+      --success: #287a53;
+      --shadow: 0 18px 46px rgba(31, 41, 48, 0.1);
     }
 
     * {
@@ -26,13 +28,14 @@
     body {
       margin: 0;
       font-family: Inter, "Segoe UI", Arial, sans-serif;
-      color: var(--text);
       background: var(--bg);
+      color: var(--text);
     }
 
     button,
     input,
-    select {
+    select,
+    textarea {
       font: inherit;
     }
 
@@ -41,46 +44,77 @@
     }
 
     .app {
-      width: min(1180px, calc(100% - 32px));
+      width: min(1220px, calc(100% - 32px));
       margin: 0 auto;
       padding: 28px 0 42px;
     }
 
     .topbar {
       display: flex;
-      justify-content: space-between;
       align-items: center;
+      justify-content: space-between;
       gap: 18px;
-      margin-bottom: 22px;
+      margin-bottom: 20px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 0;
+    }
+
+    .brand-mark {
+      display: grid;
+      place-items: center;
+      width: 46px;
+      height: 46px;
+      border-radius: 8px;
+      background: var(--primary);
+      color: #fff;
+      font-size: 24px;
+      font-weight: 900;
+      flex: 0 0 auto;
     }
 
     .eyebrow {
-      margin: 0 0 6px;
+      margin: 0 0 5px;
       color: var(--primary-dark);
       font-size: 12px;
-      font-weight: 800;
+      font-weight: 900;
       letter-spacing: 0.12em;
       text-transform: uppercase;
     }
 
     h1,
     h2,
-    h3 {
-      margin: 0;
-      letter-spacing: 0;
+    h3,
+    p {
+      margin-top: 0;
     }
 
     h1 {
+      margin-bottom: 0;
       font-size: clamp(30px, 5vw, 48px);
       line-height: 1.04;
+      letter-spacing: 0;
     }
 
     h2 {
+      margin-bottom: 0;
       font-size: 20px;
       line-height: 1.2;
+      letter-spacing: 0;
     }
 
-    .support {
+    h3 {
+      margin-bottom: 0;
+      font-size: 17px;
+      line-height: 1.25;
+      letter-spacing: 0;
+    }
+
+    .status-chip {
       display: inline-flex;
       align-items: center;
       min-height: 34px;
@@ -90,11 +124,11 @@
       background: var(--surface);
       color: var(--muted);
       font-size: 13px;
-      font-weight: 700;
+      font-weight: 800;
       white-space: nowrap;
     }
 
-    .support::before {
+    .status-chip::before {
       content: "";
       width: 8px;
       height: 8px;
@@ -103,12 +137,13 @@
       background: var(--success);
     }
 
-    .grid {
+    .layout {
       display: grid;
-      grid-template-columns: minmax(260px, 0.9fr) minmax(360px, 1.25fr) minmax(280px, 0.85fr);
+      grid-template-columns: minmax(0, 1fr) minmax(300px, 0.36fr);
       grid-template-areas:
-        "search results summary"
-        "seats seats summary";
+        "toolbar cart"
+        "menu cart"
+        "kitchen cart";
       gap: 18px;
       align-items: start;
     }
@@ -121,36 +156,30 @@
       padding: 20px;
     }
 
-    .search-panel {
-      grid-area: search;
+    .toolbar-panel {
+      grid-area: toolbar;
     }
 
-    .results-panel {
-      grid-area: results;
+    .menu-panel {
+      grid-area: menu;
     }
 
-    .seats-panel {
-      grid-area: seats;
+    .kitchen-panel {
+      grid-area: kitchen;
     }
 
-    .summary-panel {
-      grid-area: summary;
+    .cart-panel {
+      grid-area: cart;
       position: sticky;
       top: 18px;
     }
 
-    .heading {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 14px;
-      margin-bottom: 18px;
-    }
-
-    .form-grid,
-    .passenger-form {
+    .toolbar-grid {
       display: grid;
-      gap: 14px;
+      grid-template-columns: 1.2fr 0.8fr 0.8fr;
+      gap: 12px;
+      align-items: end;
+      margin-bottom: 14px;
     }
 
     label {
@@ -158,11 +187,12 @@
       gap: 7px;
       color: var(--muted);
       font-size: 13px;
-      font-weight: 800;
+      font-weight: 900;
     }
 
     input,
-    select {
+    select,
+    textarea {
       width: 100%;
       min-height: 44px;
       border: 1px solid var(--line);
@@ -173,275 +203,333 @@
       outline: none;
     }
 
-    input:focus,
-    select:focus {
-      border-color: var(--primary);
-      box-shadow: 0 0 0 3px rgba(8, 127, 140, 0.12);
+    textarea {
+      min-height: 76px;
+      padding-top: 10px;
+      resize: vertical;
     }
 
-    .primary,
-    .secondary,
-    .icon {
+    input:focus,
+    select:focus,
+    textarea:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(15, 118, 110, 0.12);
+    }
+
+    .category-tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .tab-button,
+    .button,
+    .qty-button {
+      border: 0;
+      font-weight: 900;
+    }
+
+    .tab-button {
+      min-height: 38px;
+      padding: 0 12px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: #fff;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .tab-button.active {
+      border-color: var(--primary);
+      background: #e3f5f2;
+      color: var(--primary-dark);
+    }
+
+    .button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
       min-height: 44px;
       border-radius: 8px;
-      border: 0;
-      font-weight: 800;
-    }
-
-    .primary {
-      background: var(--primary);
-      color: #fff;
       padding: 0 16px;
-    }
-
-    .primary:hover {
-      background: var(--primary-dark);
-    }
-
-    .secondary {
-      background: var(--soft);
-      color: var(--text);
-      padding: 0 14px;
-    }
-
-    .icon {
-      width: 44px;
-      flex: 0 0 44px;
-      border: 1px solid var(--line);
-      background: var(--soft);
-      color: var(--primary-dark);
-      font-size: 24px;
-      line-height: 1;
-    }
-
-    .route {
-      display: grid;
-      grid-template-columns: auto 1fr auto;
-      align-items: center;
-      gap: 10px;
-      margin-top: 22px;
-      padding: 14px;
-      border-radius: 8px;
-      background: var(--soft);
-    }
-
-    .route-point {
-      display: grid;
-      gap: 7px;
-      color: var(--muted);
-      font-size: 12px;
-      min-width: 0;
-    }
-
-    .route-point:last-child {
-      justify-items: end;
-    }
-
-    .route-point span {
-      width: 12px;
-      height: 12px;
-      border: 3px solid var(--primary);
-      border-radius: 50%;
-      background: #fff;
-    }
-
-    .route-point:last-child span {
-      border-color: var(--accent);
-    }
-
-    .route-point strong {
-      max-width: 110px;
-      overflow: hidden;
-      color: var(--text);
-      text-overflow: ellipsis;
       white-space: nowrap;
     }
 
-    .route-line {
-      height: 3px;
-      border-radius: 999px;
-      background: repeating-linear-gradient(90deg, var(--primary) 0 12px, transparent 12px 20px);
+    .button.primary {
+      background: var(--primary);
+      color: #fff;
     }
 
-    .trip-list {
-      display: grid;
-      gap: 12px;
+    .button.primary:hover {
+      background: var(--primary-dark);
     }
 
-    .trip-card {
+    .button.secondary {
+      border: 1px solid var(--line);
+      background: var(--soft);
+      color: var(--text);
+    }
+
+    .section-heading {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 16px;
+    }
+
+    .menu-count {
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .menu-grid {
       display: grid;
-      grid-template-columns: 1fr auto;
-      gap: 16px;
-      min-height: 118px;
-      padding: 16px;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .menu-card {
+      display: grid;
+      grid-template-rows: 162px 1fr;
+      min-height: 390px;
       border: 1px solid var(--line);
       border-radius: 8px;
       background: #fff;
+      overflow: hidden;
     }
 
-    .trip-card.selected {
-      border-color: var(--primary);
-      box-shadow: 0 0 0 3px rgba(8, 127, 140, 0.12);
+    .food-visual {
+      position: relative;
+      overflow: hidden;
+      background: #e9efe8;
     }
 
-    .trip-title,
-    .trip-times,
-    .trip-meta {
-      display: flex;
-      align-items: center;
+    .food-visual::before,
+    .food-visual::after,
+    .food-plate,
+    .food-detail {
+      content: "";
+      position: absolute;
+      display: block;
+    }
+
+    .food-plate {
+      left: 50%;
+      top: 50%;
+      width: 116px;
+      height: 116px;
+      border: 14px solid #fff;
+      border-radius: 50%;
+      background: #e7a934;
+      box-shadow: 0 18px 32px rgba(31, 41, 48, 0.16);
+      transform: translate(-50%, -44%);
+    }
+
+    .food-detail {
+      left: 50%;
+      top: 51%;
+      width: 74px;
+      height: 74px;
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+    }
+
+    .visual-bowl {
+      background: #e8f2ef;
+    }
+
+    .visual-bowl .food-detail {
+      background:
+        radial-gradient(circle at 28% 30%, #ffffff 0 9px, transparent 10px),
+        radial-gradient(circle at 72% 35%, #d9604b 0 11px, transparent 12px),
+        radial-gradient(circle at 38% 70%, #287a53 0 10px, transparent 11px),
+        radial-gradient(circle at 70% 72%, #25333a 0 8px, transparent 9px),
+        #f1cf72;
+    }
+
+    .visual-grill {
+      background: #f2ece6;
+    }
+
+    .visual-grill .food-plate {
+      background: #f3efe8;
+    }
+
+    .visual-grill .food-detail {
+      border-radius: 18px;
+      background:
+        linear-gradient(90deg, transparent 0 16px, rgba(37, 51, 58, 0.18) 16px 20px, transparent 20px 34px, rgba(37, 51, 58, 0.18) 34px 38px, transparent 38px),
+        #d9604b;
+      transform: translate(-50%, -50%) rotate(-12deg);
+    }
+
+    .visual-dessert {
+      background: #f4eee4;
+    }
+
+    .visual-dessert .food-plate {
+      background: #fff7e5;
+    }
+
+    .visual-dessert .food-detail {
+      width: 78px;
+      height: 58px;
+      border-radius: 10px 10px 24px 24px;
+      background:
+        radial-gradient(circle at 32% 20%, #ffffff 0 9px, transparent 10px),
+        radial-gradient(circle at 62% 24%, #ffffff 0 9px, transparent 10px),
+        linear-gradient(#d9604b 0 18px, #e7a934 18px);
+      transform: translate(-50%, -46%);
+    }
+
+    .visual-drink {
+      background: #e7f1f3;
+    }
+
+    .visual-drink .food-plate {
+      width: 82px;
+      height: 116px;
+      border: 9px solid #fff;
+      border-radius: 16px 16px 28px 28px;
+      background: linear-gradient(#f5fcff 0 28%, #0f766e 28%);
+      transform: translate(-50%, -46%);
+    }
+
+    .visual-drink .food-detail {
+      left: calc(50% + 38px);
+      top: 43%;
+      width: 28px;
+      height: 48px;
+      border: 7px solid #fff;
+      border-left: 0;
+      border-radius: 0 18px 18px 0;
+      background: transparent;
+    }
+
+    .menu-content {
+      display: grid;
+      grid-template-rows: auto auto 1fr auto;
       gap: 10px;
-      flex-wrap: wrap;
+      padding: 16px;
     }
 
-    .trip-title {
+    .menu-title-row {
+      display: flex;
       justify-content: space-between;
-      margin-bottom: 12px;
-    }
-
-    .trip-title h3 {
-      font-size: 18px;
-      line-height: 1.25;
+      gap: 10px;
+      align-items: start;
     }
 
     .rating {
       min-height: 28px;
       padding: 4px 8px;
       border-radius: 999px;
-      background: #fff3d5;
-      color: #6c4a00;
+      background: #fff4d8;
+      color: #6d4b00;
       font-size: 12px;
-      font-weight: 800;
-    }
-
-    .time {
-      display: grid;
-      gap: 2px;
-    }
-
-    .time strong,
-    .price {
-      font-size: 22px;
       font-weight: 900;
-    }
-
-    .time span,
-    .trip-meta,
-    .empty {
-      color: var(--muted);
-      font-size: 13px;
-    }
-
-    .duration {
-      flex: 1 1 80px;
-      min-width: 80px;
-      height: 1px;
-      background: var(--line);
-    }
-
-    .trip-action {
-      display: grid;
-      align-content: center;
-      justify-items: end;
-      gap: 10px;
-    }
-
-    .badge {
-      display: inline-flex;
-      align-items: center;
-      min-height: 34px;
-      padding: 7px 12px;
-      border: 1px solid var(--line);
-      border-radius: 999px;
-      color: var(--muted);
-      font-size: 13px;
-      font-weight: 700;
       white-space: nowrap;
     }
 
-    .legend {
+    .meta-row {
       display: flex;
-      gap: 14px;
+      gap: 8px;
       flex-wrap: wrap;
-      margin-bottom: 16px;
-      color: var(--muted);
-      font-size: 13px;
-      font-weight: 700;
     }
 
-    .legend span,
-    .seat {
-      width: 34px;
-      height: 34px;
-      border-radius: 7px 7px 4px 4px;
-    }
-
-    .legend-item {
+    .tag {
       display: inline-flex;
       align-items: center;
-      gap: 8px;
+      min-height: 28px;
+      padding: 4px 8px;
+      border-radius: 999px;
+      background: var(--soft);
+      color: var(--ink);
+      font-size: 12px;
+      font-weight: 900;
+      white-space: nowrap;
     }
 
-    .available {
-      border: 1px solid var(--line);
-      background: #fff;
+    .description {
+      margin-bottom: 0;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.45;
     }
 
-    .selected-seat {
-      border: 1px solid var(--primary);
-      background: var(--primary);
-      color: #fff;
+    .card-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      padding-top: 6px;
     }
 
-    .booked-seat {
-      border: 1px solid #cfd6d4;
-      background: #cfd6d4;
-      color: #7b8588;
+    .price {
+      font-size: 22px;
+      font-weight: 900;
+      white-space: nowrap;
     }
 
-    .seat-map {
+    .cart-list {
       display: grid;
-      grid-template-columns: repeat(5, 42px);
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .cart-item {
+      display: grid;
+      grid-template-columns: 1fr auto;
       gap: 10px;
-      width: max-content;
-      max-width: 100%;
-      padding: 14px;
+      padding: 12px;
       border: 1px solid var(--line);
       border-radius: 8px;
-      background: var(--soft);
-      overflow-x: auto;
+      background: #fff;
     }
 
-    .seat {
-      border: 1px solid var(--line);
-      background: #fff;
-      color: var(--text);
-      font-size: 12px;
+    .cart-item h3 {
+      font-size: 14px;
+      margin-bottom: 5px;
+    }
+
+    .cart-item small {
+      color: var(--muted);
       font-weight: 800;
     }
 
-    .seat:nth-child(5n + 3) {
-      margin-right: 18px;
+    .qty-control {
+      display: grid;
+      grid-template-columns: 32px 34px 32px;
+      align-items: center;
+      gap: 4px;
     }
 
-    .seat.selected-seat {
-      border-color: var(--primary);
+    .qty-button {
+      height: 32px;
+      border-radius: 8px;
+      background: var(--soft);
+      color: var(--text);
     }
 
-    .seat.booked-seat {
-      cursor: not-allowed;
+    .qty-value {
+      text-align: center;
+      font-size: 14px;
+      font-weight: 900;
     }
 
     .summary-lines {
       display: grid;
       gap: 12px;
-      margin-bottom: 18px;
+      margin-bottom: 16px;
     }
 
     .summary-lines div {
       display: flex;
-      align-items: center;
       justify-content: space-between;
-      gap: 10px;
+      gap: 12px;
       padding-bottom: 12px;
       border-bottom: 1px solid var(--line);
     }
@@ -449,7 +537,7 @@
     .summary-lines span {
       color: var(--muted);
       font-size: 13px;
-      font-weight: 700;
+      font-weight: 800;
     }
 
     .summary-lines strong {
@@ -458,7 +546,7 @@
 
     .summary-lines .total {
       border-bottom: 0;
-      padding: 4px 0 0;
+      padding-bottom: 0;
     }
 
     .total strong {
@@ -466,26 +554,54 @@
       font-size: 24px;
     }
 
-    .passenger-fields {
+    .checkout-form {
       display: grid;
       gap: 12px;
     }
 
-    .passenger-row {
+    .two-col {
       display: grid;
-      grid-template-columns: 1fr 82px;
+      grid-template-columns: 1fr 1fr;
       gap: 10px;
+    }
+
+    .kitchen-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+    }
+
+    .kitchen-stat {
+      min-height: 86px;
+      padding: 14px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--soft);
+    }
+
+    .kitchen-stat span {
+      display: block;
+      margin-bottom: 8px;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 900;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .kitchen-stat strong {
+      font-size: 18px;
     }
 
     .message {
       display: none;
-      margin-top: 14px;
+      margin-top: 13px;
       padding: 12px;
       border-radius: 8px;
       background: #e7f5ee;
       color: #175c3d;
       font-size: 14px;
-      font-weight: 700;
+      font-weight: 800;
       line-height: 1.45;
     }
 
@@ -498,15 +614,27 @@
       border: 1px dashed var(--line);
       border-radius: 8px;
       background: var(--soft);
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.45;
     }
 
-    @media (max-width: 1040px) {
-      .grid {
-        grid-template-columns: 1fr 1fr;
+    @media (max-width: 1080px) {
+      .layout {
+        grid-template-columns: 1fr;
         grid-template-areas:
-          "search summary"
-          "results summary"
-          "seats seats";
+          "toolbar"
+          "menu"
+          "kitchen"
+          "cart";
+      }
+
+      .cart-panel {
+        position: static;
+      }
+
+      .menu-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
       }
     }
 
@@ -517,40 +645,25 @@
       }
 
       .topbar,
-      .grid,
-      .trip-card {
+      .toolbar-grid,
+      .menu-grid,
+      .two-col,
+      .kitchen-grid {
         display: grid;
         grid-template-columns: 1fr;
       }
 
-      .grid {
-        grid-template-areas:
-          "search"
-          "results"
-          "seats"
-          "summary";
-      }
-
-      .summary-panel {
-        position: static;
-      }
-
-      .heading,
-      .trip-title {
+      .section-heading {
         align-items: stretch;
+        flex-direction: column;
       }
 
-      .support,
-      .badge {
+      .status-chip {
         width: fit-content;
       }
 
-      .trip-action {
-        justify-items: stretch;
-      }
-
-      .passenger-row {
-        grid-template-columns: 1fr;
+      .menu-card {
+        min-height: 360px;
       }
     }
   </style>
@@ -558,386 +671,438 @@
 <body>
   <div class="app">
     <header class="topbar">
-      <div>
-        <p class="eyebrow">SmartBus</p>
-        <h1>Book bus tickets</h1>
+      <div class="brand">
+        <div class="brand-mark">U</div>
+        <div>
+          <p class="eyebrow">UrbanBowl</p>
+          <h1>Modern food ordering</h1>
+        </div>
       </div>
-      <div class="support">24/7 support</div>
+      <div class="status-chip">Kitchen open</div>
     </header>
 
-    <main class="grid">
-      <section class="panel search-panel">
-        <div class="heading">
-          <div>
-            <p class="eyebrow">Journey</p>
-            <h2>Find your trip</h2>
-          </div>
-          <button class="icon" id="swapCities" type="button" title="Swap cities">⇄</button>
+    <main class="layout">
+      <section class="panel toolbar-panel">
+        <div class="toolbar-grid">
+          <label>
+            Search menu
+            <input id="searchInput" type="search" placeholder="Search bowls, grills, drinks" />
+          </label>
+          <label>
+            Sort
+            <select id="sortSelect">
+              <option value="popular">Most popular</option>
+              <option value="priceLow">Lowest price</option>
+              <option value="priceHigh">Highest price</option>
+              <option value="fastest">Fastest prep</option>
+            </select>
+          </label>
+          <label>
+            Diet
+            <select id="dietSelect">
+              <option value="All">All</option>
+              <option value="Veg">Veg</option>
+              <option value="High protein">High protein</option>
+              <option value="Light">Light</option>
+            </select>
+          </label>
         </div>
+        <div id="categoryTabs" class="category-tabs"></div>
+      </section>
 
-        <form id="searchForm" class="form-grid">
-          <label>From <select id="fromCity" required></select></label>
-          <label>To <select id="toCity" required></select></label>
-          <label>Travel date <input type="date" id="travelDate" required /></label>
-          <label>Passengers <input type="number" id="passengerCount" min="1" max="6" value="1" required /></label>
-          <button class="primary" type="submit">Search buses</button>
-        </form>
+      <section class="panel menu-panel">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">Menu</p>
+            <h2>Fresh picks for today</h2>
+          </div>
+          <span id="menuCount" class="menu-count">0 items</span>
+        </div>
+        <div id="menuGrid" class="menu-grid"></div>
+      </section>
 
-        <div class="route">
-          <div class="route-point"><span></span><strong id="routeStart">Bengaluru</strong></div>
-          <div class="route-line"></div>
-          <div class="route-point"><span></span><strong id="routeEnd">Hyderabad</strong></div>
+      <section class="panel kitchen-panel">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">Kitchen status</p>
+            <h2>Service snapshot</h2>
+          </div>
+        </div>
+        <div class="kitchen-grid">
+          <div class="kitchen-stat"><span>Average prep</span><strong id="avgPrep">-</strong></div>
+          <div class="kitchen-stat"><span>Cart items</span><strong id="cartItems">0</strong></div>
+          <div class="kitchen-stat"><span>Pickup window</span><strong>25 min</strong></div>
+          <div class="kitchen-stat"><span>Rating</span><strong>4.8 / 5</strong></div>
         </div>
       </section>
 
-      <section class="panel results-panel">
-        <div class="heading">
-          <div>
-            <p class="eyebrow">Available buses</p>
-            <h2>Recommended trips</h2>
-          </div>
-          <select id="sortTrips">
-            <option value="departure">Departure</option>
-            <option value="price">Lowest price</option>
-            <option value="rating">Top rated</option>
-          </select>
-        </div>
-        <div id="tripList" class="trip-list"></div>
-      </section>
-
-      <section class="panel seats-panel">
-        <div class="heading">
-          <div>
-            <p class="eyebrow">Seats</p>
-            <h2>Choose seats</h2>
-          </div>
-          <span id="selectedTripBadge" class="badge">No trip selected</span>
-        </div>
-        <div class="legend">
-          <div class="legend-item"><span class="available"></span>Available</div>
-          <div class="legend-item"><span class="selected-seat"></span>Selected</div>
-          <div class="legend-item"><span class="booked-seat"></span>Booked</div>
-        </div>
-        <div id="seatMap" class="seat-map"></div>
-      </section>
-
-      <aside class="panel summary-panel">
-        <div class="heading">
+      <aside class="panel cart-panel">
+        <div class="section-heading">
           <div>
             <p class="eyebrow">Checkout</p>
-            <h2>Booking summary</h2>
+            <h2>Your order</h2>
           </div>
         </div>
-
+        <div id="cartList" class="cart-list"></div>
         <div class="summary-lines">
-          <div><span>Bus</span><strong id="summaryBus">Select a trip</strong></div>
-          <div><span>Date</span><strong id="summaryDate">-</strong></div>
-          <div><span>Seats</span><strong id="summarySeats">-</strong></div>
-          <div><span>Fare</span><strong id="summaryFare">Rs 0</strong></div>
-          <div><span>Taxes</span><strong id="summaryTaxes">Rs 0</strong></div>
-          <div class="total"><span>Total</span><strong id="summaryTotal">Rs 0</strong></div>
+          <div><span>Subtotal</span><strong id="subtotal">Rs 0</strong></div>
+          <div><span>Packaging</span><strong id="packaging">Rs 0</strong></div>
+          <div><span>Taxes</span><strong id="taxes">Rs 0</strong></div>
+          <div class="total"><span>Total</span><strong id="total">Rs 0</strong></div>
         </div>
-
-        <form id="passengerForm" class="passenger-form">
-          <div id="passengerFields"></div>
-          <button class="primary" type="submit">Confirm booking</button>
+        <form id="checkoutForm" class="checkout-form">
+          <div class="two-col">
+            <label>
+              Method
+              <select id="orderMethod">
+                <option value="Pickup">Pickup</option>
+                <option value="Delivery">Delivery</option>
+              </select>
+            </label>
+            <label>
+              Time
+              <select id="timeSlot">
+                <option>ASAP</option>
+                <option>12:30 PM</option>
+                <option>01:00 PM</option>
+                <option>01:30 PM</option>
+                <option>02:00 PM</option>
+              </select>
+            </label>
+          </div>
+          <label>
+            Name
+            <input id="customerName" type="text" placeholder="Enter your name" required />
+          </label>
+          <label>
+            Order notes
+            <textarea id="orderNotes" placeholder="Less spice, no onion, extra cutlery"></textarea>
+          </label>
+          <button class="button primary" type="submit">Place order</button>
         </form>
-        <div id="bookingMessage" class="message"></div>
+        <div id="message" class="message"></div>
       </aside>
     </main>
   </div>
 
   <script>
-    const cities = ["Bengaluru", "Chennai", "Hyderabad", "Mumbai", "Pune", "Goa", "Delhi", "Jaipur"];
-
-    const buses = [
-      { id: "sb101", operator: "MetroLine Travels", type: "AC Sleeper", from: "Bengaluru", to: "Hyderabad", depart: "21:30", arrive: "06:15", duration: "8h 45m", price: 1299, rating: 4.7, bookedSeats: [2, 5, 9, 16, 18, 21, 27, 31, 35] },
-      { id: "sb102", operator: "South Star Bus", type: "Volvo Multi Axle", from: "Bengaluru", to: "Hyderabad", depart: "22:45", arrive: "07:05", duration: "8h 20m", price: 1499, rating: 4.8, bookedSeats: [1, 3, 7, 12, 14, 22, 26, 30, 39] },
-      { id: "sb103", operator: "ExpressWay", type: "AC Seater", from: "Bengaluru", to: "Chennai", depart: "07:20", arrive: "13:10", duration: "5h 50m", price: 799, rating: 4.4, bookedSeats: [4, 8, 10, 11, 20, 23, 28, 33] },
-      { id: "sb104", operator: "Coastal Connect", type: "AC Sleeper", from: "Mumbai", to: "Goa", depart: "20:15", arrive: "06:45", duration: "10h 30m", price: 1199, rating: 4.6, bookedSeats: [6, 13, 15, 19, 24, 32, 36, 37] },
-      { id: "sb105", operator: "Deccan Premium", type: "Volvo Multi Axle", from: "Pune", to: "Mumbai", depart: "08:00", arrive: "11:20", duration: "3h 20m", price: 499, rating: 4.5, bookedSeats: [2, 9, 17, 25, 34] },
-      { id: "sb106", operator: "NorthWay", type: "AC Seater", from: "Delhi", to: "Jaipur", depart: "06:45", arrive: "12:10", duration: "5h 25m", price: 699, rating: 4.3, bookedSeats: [5, 6, 12, 18, 29, 40] },
-      { id: "sb107", operator: "Royal Roadways", type: "AC Sleeper", from: "Chennai", to: "Bengaluru", depart: "23:15", arrive: "05:45", duration: "6h 30m", price: 899, rating: 4.6, bookedSeats: [3, 4, 8, 15, 22, 27, 38] },
-      { id: "sb108", operator: "Western Cruiser", type: "AC Sleeper", from: "Hyderabad", to: "Mumbai", depart: "19:30", arrive: "09:20", duration: "13h 50m", price: 1699, rating: 4.5, bookedSeats: [1, 11, 13, 19, 20, 24, 28, 35] }
+    const menuItems = [
+      {
+        id: "m1",
+        name: "Harvest Protein Bowl",
+        category: "Bowls",
+        diet: "High protein",
+        price: 349,
+        prep: 18,
+        rating: 4.9,
+        visual: "visual-bowl",
+        description: "Brown rice, grilled paneer, chickpeas, greens, seeds, and herb dressing."
+      },
+      {
+        id: "m2",
+        name: "Charcoal Chicken Plate",
+        category: "Grill",
+        diet: "High protein",
+        price: 429,
+        prep: 22,
+        rating: 4.8,
+        visual: "visual-grill",
+        description: "Smoky grilled chicken with lemon rice, salad, and garlic yogurt sauce."
+      },
+      {
+        id: "m3",
+        name: "Citrus Quinoa Bowl",
+        category: "Bowls",
+        diet: "Veg",
+        price: 319,
+        prep: 16,
+        rating: 4.7,
+        visual: "visual-bowl",
+        description: "Quinoa, roasted vegetables, orange glaze, avocado, and crunchy greens."
+      },
+      {
+        id: "m4",
+        name: "Cold Brew Tonic",
+        category: "Drinks",
+        diet: "Light",
+        price: 189,
+        prep: 6,
+        rating: 4.6,
+        visual: "visual-drink",
+        description: "Cold brew coffee topped with citrus tonic and a clean sparkling finish."
+      },
+      {
+        id: "m5",
+        name: "Paneer Fire Grill",
+        category: "Grill",
+        diet: "Veg",
+        price: 379,
+        prep: 20,
+        rating: 4.8,
+        visual: "visual-grill",
+        description: "Tandoori paneer, charred peppers, mint chutney, and warm millet flatbread."
+      },
+      {
+        id: "m6",
+        name: "Berry Cream Slice",
+        category: "Desserts",
+        diet: "Veg",
+        price: 229,
+        prep: 8,
+        rating: 4.7,
+        visual: "visual-dessert",
+        description: "Soft vanilla sponge layered with berry compote and light cream."
+      },
+      {
+        id: "m7",
+        name: "Iced Matcha Cloud",
+        category: "Drinks",
+        diet: "Light",
+        price: 209,
+        prep: 7,
+        rating: 4.5,
+        visual: "visual-drink",
+        description: "Ceremonial matcha, chilled milk, soft foam, and a touch of honey."
+      },
+      {
+        id: "m8",
+        name: "Chocolate Crunch Jar",
+        category: "Desserts",
+        diet: "Veg",
+        price: 249,
+        prep: 9,
+        rating: 4.9,
+        visual: "visual-dessert",
+        description: "Dark chocolate mousse, cookie crumble, cocoa nibs, and vanilla cream."
+      },
+      {
+        id: "m9",
+        name: "Lean Herb Fish",
+        category: "Grill",
+        diet: "Light",
+        price: 459,
+        prep: 24,
+        rating: 4.6,
+        visual: "visual-grill",
+        description: "Herb grilled fish with steamed vegetables and lemon caper dressing."
+      }
     ];
 
-    const state = {
-      trips: [],
-      selectedTrip: null,
-      selectedSeats: [],
-      passengers: 1
-    };
+    const categories = ["All", "Bowls", "Grill", "Drinks", "Desserts"];
+    const cart = new Map();
+    let activeCategory = "All";
 
     const el = {
-      searchForm: document.getElementById("searchForm"),
-      fromCity: document.getElementById("fromCity"),
-      toCity: document.getElementById("toCity"),
-      travelDate: document.getElementById("travelDate"),
-      passengerCount: document.getElementById("passengerCount"),
-      routeStart: document.getElementById("routeStart"),
-      routeEnd: document.getElementById("routeEnd"),
-      swapCities: document.getElementById("swapCities"),
-      sortTrips: document.getElementById("sortTrips"),
-      tripList: document.getElementById("tripList"),
-      seatMap: document.getElementById("seatMap"),
-      selectedTripBadge: document.getElementById("selectedTripBadge"),
-      passengerFields: document.getElementById("passengerFields"),
-      passengerForm: document.getElementById("passengerForm"),
-      bookingMessage: document.getElementById("bookingMessage"),
-      summaryBus: document.getElementById("summaryBus"),
-      summaryDate: document.getElementById("summaryDate"),
-      summarySeats: document.getElementById("summarySeats"),
-      summaryFare: document.getElementById("summaryFare"),
-      summaryTaxes: document.getElementById("summaryTaxes"),
-      summaryTotal: document.getElementById("summaryTotal")
+      searchInput: document.getElementById("searchInput"),
+      sortSelect: document.getElementById("sortSelect"),
+      dietSelect: document.getElementById("dietSelect"),
+      categoryTabs: document.getElementById("categoryTabs"),
+      menuGrid: document.getElementById("menuGrid"),
+      menuCount: document.getElementById("menuCount"),
+      cartList: document.getElementById("cartList"),
+      subtotal: document.getElementById("subtotal"),
+      packaging: document.getElementById("packaging"),
+      taxes: document.getElementById("taxes"),
+      total: document.getElementById("total"),
+      avgPrep: document.getElementById("avgPrep"),
+      cartItems: document.getElementById("cartItems"),
+      checkoutForm: document.getElementById("checkoutForm"),
+      customerName: document.getElementById("customerName"),
+      orderMethod: document.getElementById("orderMethod"),
+      message: document.getElementById("message")
     };
 
     function init() {
-      cities.forEach((city) => {
-        el.fromCity.appendChild(new Option(city, city));
-        el.toCity.appendChild(new Option(city, city));
-      });
-
-      el.fromCity.value = "Bengaluru";
-      el.toCity.value = "Hyderabad";
-
-      const today = new Date();
-      const date = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}-${String(today.getDate()).padStart(2, "0")}`;
-      el.travelDate.value = date;
-      el.travelDate.min = date;
-
+      renderTabs();
       bindEvents();
-      updateRoute();
-      updatePassengerFields();
-      searchTrips();
+      render();
+    }
+
+    function renderTabs() {
+      el.categoryTabs.innerHTML = categories.map((category) => `
+        <button class="tab-button${category === activeCategory ? " active" : ""}" type="button" data-category="${category}">
+          ${category}
+        </button>
+      `).join("");
     }
 
     function bindEvents() {
-      el.searchForm.addEventListener("submit", (event) => {
-        event.preventDefault();
-        searchTrips();
+      el.searchInput.addEventListener("input", render);
+      el.sortSelect.addEventListener("change", render);
+      el.dietSelect.addEventListener("change", render);
+
+      el.categoryTabs.addEventListener("click", (event) => {
+        const button = event.target.closest("button");
+        if (!button) return;
+        activeCategory = button.dataset.category;
+        renderTabs();
+        render();
       });
 
-      el.fromCity.addEventListener("change", updateRoute);
-      el.toCity.addEventListener("change", updateRoute);
-
-      el.swapCities.addEventListener("click", () => {
-        const currentFrom = el.fromCity.value;
-        el.fromCity.value = el.toCity.value;
-        el.toCity.value = currentFrom;
-        updateRoute();
-        searchTrips();
-      });
-
-      el.sortTrips.addEventListener("change", () => renderTrips(sortTrips(state.trips)));
-
-      el.passengerCount.addEventListener("input", () => {
-        state.passengers = Number(el.passengerCount.value) || 1;
-        state.selectedSeats = state.selectedSeats.slice(0, state.passengers);
-        updatePassengerFields();
-        renderSeatMap();
-        updateSummary();
-      });
-
-      el.passengerForm.addEventListener("submit", confirmBooking);
+      el.checkoutForm.addEventListener("submit", placeOrder);
     }
 
-    function updateRoute() {
-      el.routeStart.textContent = el.fromCity.value;
-      el.routeEnd.textContent = el.toCity.value;
+    function render() {
+      const items = getVisibleItems();
+      renderMenu(items);
+      renderCart();
+      renderKitchen(items);
     }
 
-    function searchTrips() {
-      state.passengers = Number(el.passengerCount.value) || 1;
-      state.selectedTrip = null;
-      state.selectedSeats = [];
-      el.bookingMessage.classList.remove("visible");
+    function getVisibleItems() {
+      const query = el.searchInput.value.trim().toLowerCase();
+      const diet = el.dietSelect.value;
+      const sort = el.sortSelect.value;
 
-      const from = el.fromCity.value;
-      const to = el.toCity.value;
-      state.trips = from === to ? [] : buses.filter((bus) => bus.from === from && bus.to === to);
+      const filtered = menuItems
+        .filter((item) => activeCategory === "All" || item.category === activeCategory)
+        .filter((item) => diet === "All" || item.diet === diet)
+        .filter((item) => !query || `${item.name} ${item.category} ${item.description}`.toLowerCase().includes(query));
 
-      renderTrips(sortTrips(state.trips));
-      updatePassengerFields();
+      if (sort === "priceLow") filtered.sort((a, b) => a.price - b.price);
+      if (sort === "priceHigh") filtered.sort((a, b) => b.price - a.price);
+      if (sort === "fastest") filtered.sort((a, b) => a.prep - b.prep);
+      if (sort === "popular") filtered.sort((a, b) => b.rating - a.rating);
 
-      if (state.trips.length) {
-        selectTrip(sortTrips(state.trips)[0].id);
+      return filtered;
+    }
+
+    function renderMenu(items) {
+      el.menuCount.textContent = `${items.length} item${items.length === 1 ? "" : "s"}`;
+
+      if (!items.length) {
+        el.menuGrid.innerHTML = '<div class="empty">No dishes match the current filters. Try a different category or search term.</div>';
+        return;
+      }
+
+      el.menuGrid.innerHTML = items.map((item) => `
+        <article class="menu-card">
+          <div class="food-visual ${item.visual}">
+            <span class="food-plate"></span>
+            <span class="food-detail"></span>
+          </div>
+          <div class="menu-content">
+            <div class="menu-title-row">
+              <h3>${item.name}</h3>
+              <span class="rating">${item.rating.toFixed(1)}</span>
+            </div>
+            <div class="meta-row">
+              <span class="tag">${item.category}</span>
+              <span class="tag">${item.diet}</span>
+              <span class="tag">${item.prep} min</span>
+            </div>
+            <p class="description">${item.description}</p>
+            <div class="card-footer">
+              <div class="price">${money(item.price)}</div>
+              <button class="button secondary" type="button" onclick="addToCart('${item.id}')">Add</button>
+            </div>
+          </div>
+        </article>
+      `).join("");
+    }
+
+    function addToCart(id) {
+      const current = cart.get(id) || 0;
+      cart.set(id, current + 1);
+      hideMessage();
+      renderCart();
+      renderKitchen(getVisibleItems());
+    }
+
+    function changeQty(id, amount) {
+      const next = (cart.get(id) || 0) + amount;
+      if (next <= 0) cart.delete(id);
+      else cart.set(id, next);
+      hideMessage();
+      renderCart();
+      renderKitchen(getVisibleItems());
+    }
+
+    function renderCart() {
+      const entries = [...cart.entries()];
+
+      if (!entries.length) {
+        el.cartList.innerHTML = '<div class="empty">Your cart is empty. Add dishes from the menu to start an order.</div>';
       } else {
-        renderSeatMap();
-        updateSummary();
+        el.cartList.innerHTML = entries.map(([id, qty]) => {
+          const item = menuItems.find((dish) => dish.id === id);
+          return `
+            <div class="cart-item">
+              <div>
+                <h3>${item.name}</h3>
+                <small>${money(item.price)} each</small>
+              </div>
+              <div class="qty-control">
+                <button class="qty-button" type="button" onclick="changeQty('${id}', -1)">-</button>
+                <span class="qty-value">${qty}</span>
+                <button class="qty-button" type="button" onclick="changeQty('${id}', 1)">+</button>
+              </div>
+            </div>
+          `;
+        }).join("");
       }
+
+      const subtotal = entries.reduce((total, [id, qty]) => {
+        const item = menuItems.find((dish) => dish.id === id);
+        return total + item.price * qty;
+      }, 0);
+      const packaging = entries.length ? 35 : 0;
+      const taxes = Math.round(subtotal * 0.05);
+      const total = subtotal + packaging + taxes;
+
+      el.subtotal.textContent = money(subtotal);
+      el.packaging.textContent = money(packaging);
+      el.taxes.textContent = money(taxes);
+      el.total.textContent = money(total);
+      el.cartItems.textContent = entries.reduce((totalQty, [, qty]) => totalQty + qty, 0);
     }
 
-    function sortTrips(trips) {
-      const sorted = [...trips];
-      const sortBy = el.sortTrips.value;
-
-      if (sortBy === "price") sorted.sort((a, b) => a.price - b.price);
-      else if (sortBy === "rating") sorted.sort((a, b) => b.rating - a.rating);
-      else sorted.sort((a, b) => a.depart.localeCompare(b.depart));
-
-      return sorted;
-    }
-
-    function renderTrips(trips) {
-      el.tripList.innerHTML = "";
-
-      if (!trips.length) {
-        el.tripList.innerHTML = '<div class="empty">No buses found for this route. Try changing the cities.</div>';
+    function renderKitchen(items) {
+      if (!items.length) {
+        el.avgPrep.textContent = "-";
         return;
       }
-
-      trips.forEach((trip) => {
-        const card = document.createElement("article");
-        card.className = `trip-card${state.selectedTrip?.id === trip.id ? " selected" : ""}`;
-        card.innerHTML = `
-          <div>
-            <div class="trip-title">
-              <h3>${trip.operator}</h3>
-              <span class="rating">${trip.rating.toFixed(1)} rating</span>
-            </div>
-            <div class="trip-times">
-              <div class="time"><strong>${trip.depart}</strong><span>${trip.from}</span></div>
-              <div class="duration"></div>
-              <div class="time"><strong>${trip.arrive}</strong><span>${trip.to}</span></div>
-            </div>
-            <div class="trip-meta">
-              <span>${trip.type}</span>
-              <span>${trip.duration}</span>
-              <span>${40 - trip.bookedSeats.length} seats left</span>
-            </div>
-          </div>
-          <div class="trip-action">
-            <div class="price">Rs ${trip.price}</div>
-            <button class="secondary" type="button">Select</button>
-          </div>
-        `;
-
-        card.querySelector("button").addEventListener("click", () => selectTrip(trip.id));
-        el.tripList.appendChild(card);
-      });
+      const avg = Math.round(items.reduce((total, item) => total + item.prep, 0) / items.length);
+      el.avgPrep.textContent = `${avg} min`;
     }
 
-    function selectTrip(tripId) {
-      state.selectedTrip = buses.find((trip) => trip.id === tripId);
-      state.selectedSeats = [];
-      el.bookingMessage.classList.remove("visible");
-      renderTrips(sortTrips(state.trips));
-      renderSeatMap();
-      updateSummary();
-    }
-
-    function renderSeatMap() {
-      el.seatMap.innerHTML = "";
-
-      if (!state.selectedTrip) {
-        el.selectedTripBadge.textContent = "No trip selected";
-        el.seatMap.innerHTML = '<div class="empty">Select a bus to see available seats.</div>';
-        return;
-      }
-
-      el.selectedTripBadge.textContent = state.selectedTrip.type;
-
-      for (let seat = 1; seat <= 40; seat += 1) {
-        const button = document.createElement("button");
-        const booked = state.selectedTrip.bookedSeats.includes(seat);
-        const selected = state.selectedSeats.includes(seat);
-
-        button.type = "button";
-        button.textContent = seat;
-        button.className = `seat${booked ? " booked-seat" : ""}${selected ? " selected-seat" : ""}`;
-        button.disabled = booked;
-        button.addEventListener("click", () => toggleSeat(seat));
-        el.seatMap.appendChild(button);
-      }
-    }
-
-    function toggleSeat(seat) {
-      const index = state.selectedSeats.indexOf(seat);
-
-      if (index >= 0) {
-        state.selectedSeats.splice(index, 1);
-      } else if (state.selectedSeats.length < state.passengers) {
-        state.selectedSeats.push(seat);
-      }
-
-      renderSeatMap();
-      updateSummary();
-    }
-
-    function updatePassengerFields() {
-      el.passengerFields.innerHTML = "";
-      const wrapper = document.createElement("div");
-      wrapper.className = "passenger-fields";
-
-      for (let i = 1; i <= state.passengers; i += 1) {
-        const row = document.createElement("div");
-        row.className = "passenger-row";
-        row.innerHTML = `
-          <label>Passenger ${i}<input type="text" name="passengerName" placeholder="Full name" required /></label>
-          <label>Age<input type="number" name="passengerAge" min="1" max="100" placeholder="Age" required /></label>
-        `;
-        wrapper.appendChild(row);
-      }
-
-      el.passengerFields.appendChild(wrapper);
-    }
-
-    function updateSummary() {
-      const trip = state.selectedTrip;
-      const fare = trip ? trip.price * state.selectedSeats.length : 0;
-      const taxes = Math.round(fare * 0.05);
-
-      el.summaryBus.textContent = trip ? trip.operator : "Select a trip";
-      el.summaryDate.textContent = formatDate(el.travelDate.value);
-      el.summarySeats.textContent = state.selectedSeats.length ? state.selectedSeats.join(", ") : "-";
-      el.summaryFare.textContent = `Rs ${fare}`;
-      el.summaryTaxes.textContent = `Rs ${taxes}`;
-      el.summaryTotal.textContent = `Rs ${fare + taxes}`;
-    }
-
-    function formatDate(value) {
-      if (!value) return "-";
-      return new Date(`${value}T00:00:00`).toLocaleDateString("en-IN", {
-        day: "2-digit",
-        month: "short",
-        year: "numeric"
-      });
-    }
-
-    function confirmBooking(event) {
+    function placeOrder(event) {
       event.preventDefault();
 
-      if (!state.selectedTrip) {
-        showMessage("Please select a bus before confirming.");
+      if (!cart.size) {
+        showMessage("Add at least one dish before placing the order.");
         return;
       }
 
-      if (state.selectedSeats.length !== state.passengers) {
-        showMessage(`Please select ${state.passengers} seat${state.passengers > 1 ? "s" : ""}.`);
+      const name = el.customerName.value.trim();
+      if (!name) {
+        showMessage("Enter your name to confirm the order.");
         return;
       }
 
-      const names = new FormData(el.passengerForm).getAll("passengerName").map((name) => name.trim());
-      if (!names.every(Boolean)) {
-        showMessage("Please enter passenger details.");
-        return;
-      }
-
-      const bookingId = `SB${Math.floor(100000 + Math.random() * 900000)}`;
-      showMessage(`Booking confirmed. Ticket ${bookingId} for ${state.selectedTrip.operator}, seats ${state.selectedSeats.join(", ")}.`);
-      state.selectedTrip.bookedSeats.push(...state.selectedSeats);
-      state.selectedSeats = [];
-      renderTrips(sortTrips(state.trips));
-      renderSeatMap();
-      updateSummary();
+      const orderId = `UB${Math.floor(100000 + Math.random() * 900000)}`;
+      showMessage(`Order ${orderId} confirmed for ${name}. ${el.orderMethod.value} is scheduled for the selected time.`);
+      cart.clear();
+      renderCart();
+      renderKitchen(getVisibleItems());
+      el.checkoutForm.reset();
     }
 
-    function showMessage(message) {
-      el.bookingMessage.textContent = message;
-      el.bookingMessage.classList.add("visible");
+    function money(value) {
+      return `Rs ${value.toLocaleString("en-IN")}`;
     }
 
+    function showMessage(text) {
+      el.message.textContent = text;
+      el.message.classList.add("visible");
+    }
+
+    function hideMessage() {
+      el.message.classList.remove("visible");
+    }
+
+    window.addToCart = addToCart;
+    window.changeQty = changeQty;
     init();
   </script>
 </body>
